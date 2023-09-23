@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "noterapp"
+version = "0.1.0"
+description = "a simple app made with fastapi, sqlalchemy, alembic, docker, celery, etc using the DDD pattern"
+authors = ["Raj <rs457036@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.103.1"
+SQLAlchemy = "^2.0.21"
+alembic = "^1.12.0"
+psycopg2 = "^2.9.7"
+dependency-injector = "^4.41.0"
+uvicorn = "^0.23.2"
+requests = "^2.31.0"
+httpx = "^0.25.0"
+celery = "^5.3.4"
+redis = "^5.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+debugpy = "^1.8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

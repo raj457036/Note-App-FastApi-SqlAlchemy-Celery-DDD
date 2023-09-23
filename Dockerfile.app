@@ -1,0 +1,17 @@
+FROM python:3.11.5-alpine3.17
+
+WORKDIR /usr/app/
+
+COPY poetry.lock pyproject.toml ./
+
+RUN apk update && \
+    apk --no-cache --update add libffi-dev openssl-dev postgresql-dev postgresql build-base && \
+    python -m pip install --upgrade pip && \
+    pip install poetry && poetry install && \
+    apk del libffi-dev openssl-dev build-base
+
+COPY . .
+RUN chmod +x "./entrypoint.sh"
+
+ENTRYPOINT [ "./entrypoint.sh" ]
+

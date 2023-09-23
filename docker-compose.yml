@@ -1,0 +1,90 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: app_server
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    ports:
+      - 8000:8000
+      - 5678:5678
+    volumes:
+      - .:/usr/app
+    environment:
+      - PG_HOST=db
+      - PG_PASSWORD=pass12345
+      - PG_USER=postgres
+      - PG_DB=postgres
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    container_name: celery_worker
+    volumes:
+      - .:/usr/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    command:
+      ["poetry", "run", "celery", "-A", "celery_worker", "worker", "-l", "info"]
+    depends_on:
+      - redis
+      - db
+    restart: unless-stopped
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    container_name: celery_beat_worker
+    volumes:
+      - .:/usr/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    command:
+      ["poetry", "run", "celery", "-A", "celery_worker", "beat", "-l", "info"]
+    depends_on:
+      - redis
+      - db
+      - celery
+    restart: unless-stopped
+
+  flower:
+    image: mher/flower
+    container_name: celery_flower
+    ports:
+      - 5555:5555
+    command: ["celery", "--broker", "redis://redis:6379/0", "flower"]
+    depends_on:
+      - celery
+      - redis
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:alpine3.17
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_PASSWORD=pass12345
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    restart: always
+
+  redis:
+    image: redis
+    container_name: redis_broker
+    expose:
+      - 6379
+    restart: always
+
+volumes:
+  pg_data:
+  celery_beat_data:
