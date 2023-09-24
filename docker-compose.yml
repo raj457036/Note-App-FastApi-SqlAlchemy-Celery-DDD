@@ -12,13 +12,21 @@ services:
     volumes:
       - .:/usr/app
     environment:
-      - PG_HOST=db
-      - PG_PASSWORD=pass12345
-      - PG_USER=postgres
-      - PG_DB=postgres
+      - NOTER_APP_PG_HOST=db
+      - NOTER_APP_PG_PASSWORD=pass12345
+      - NOTER_APP_PG_USER=postgres
+      - NOTER_APP_PG_DB=postgres
+      - NOTER_APP_PG_PORT=5432
+      - NOTER_APP_S3_ENDPOINT=http://localstack:4566
+      - NOTER_APP_S3_BUCKET_NAME=noter-app
+      - NOTER_APP_SQS_ENDPOINT=http://localstack:4566
+      - NOTER_APP_SNS_ENDPOINT=http://localstack:4566
     depends_on:
       - db
+      - localstack
     restart: unless-stopped
+    networks:
+      - noter_app_network
 
   celery:
     build:
@@ -36,6 +44,8 @@ services:
       - redis
       - db
     restart: unless-stopped
+    networks:
+      - noter_app_network
 
   celery_beat:
     build:
@@ -54,6 +64,8 @@ services:
       - db
       - celery
     restart: unless-stopped
+    networks:
+      - noter_app_network
 
   flower:
     image: mher/flower
@@ -66,6 +78,8 @@ services:
       - redis
       - db
     restart: unless-stopped
+    networks:
+      - noter_app_network
 
   db:
     image: postgres:alpine3.17
@@ -77,6 +91,8 @@ services:
     ports:
       - 5432:5432
     restart: always
+    networks:
+      - noter_app_network
 
   redis:
     image: redis
@@ -84,7 +100,29 @@ services:
     expose:
       - 6379
     restart: always
+    networks:
+      - noter_app_network
+
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+      - "443:443"
+    environment:
+      - GATEWAY_LISTEN=0.0.0.0:4566
+      - PERSISTENCE=1
+      - DEBUG=0
+      - SERVICES=s3,sqs,sns
+      - S3_SKIP_SIGNATURE_VALIDATION=0
+    volumes:
+      - ./data:/state
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - noter_app_network
 
 volumes:
   pg_data:
   celery_beat_data:
+
+networks:
+  noter_app_network:
