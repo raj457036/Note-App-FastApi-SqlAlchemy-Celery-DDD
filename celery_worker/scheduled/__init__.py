@@ -1,14 +1,14 @@
 from celery_worker import celery as app
+from src.core.settings import Settings
 
+settings = Settings.cached()
 beat_schedule = {
     "poll_sqs": {
         "task": "celery_worker.tasks.pick_up_sqs_messages",
-        "schedule": 30,
-        # "args": (topic, queue, region),
+        "schedule": 20,
         "kwargs": {
-            "topic": "test",
-            "queue": "test",
-            "region": "test",
+            "queue_name": settings.sqs_queue_name,
+            "endpoint": str(settings.sqs_endpoint),
         },
     },
 }

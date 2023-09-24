@@ -7,8 +7,7 @@ import boto3
 from botocore.exceptions import ClientError
 from typing_extensions import override
 
-from src.domain.common.integration.file_storage_provider import \
-    FileStorageProvider
+from src.domain.integration.storage import FileStorageService
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +19,8 @@ class S3SignedUrlResponse:
     fields: dict[str, str]
 
 
-class S3StorageProvider(FileStorageProvider[S3SignedUrlResponse | None]):
-    """An S3 storage provider"""
+class S3FileStorageService(FileStorageService[S3SignedUrlResponse | None]):
+    """An S3 storage service"""
 
     def __init__(self, endpoint: str | None = None, bucket_name: str | None = None) -> None:
         super().__init__()

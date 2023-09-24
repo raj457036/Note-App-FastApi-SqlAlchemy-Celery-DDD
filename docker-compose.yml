@@ -18,9 +18,14 @@ services:
       - NOTER_APP_PG_DB=postgres
       - NOTER_APP_PG_PORT=5432
       - NOTER_APP_S3_ENDPOINT=http://localstack:4566
-      - NOTER_APP_S3_BUCKET_NAME=noter-app
+      - NOTER_APP_S3_BUCKET_NAME=noter-app-bucket
       - NOTER_APP_SQS_ENDPOINT=http://localstack:4566
+      - NOTER_APP_SQS_QUEUE_NAME=s3-messages
       - NOTER_APP_SNS_ENDPOINT=http://localstack:4566
+      - NOTER_APP_SNS_TOPIC=s3-events
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
     depends_on:
       - db
       - localstack
@@ -38,11 +43,21 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - NOTER_APP_S3_ENDPOINT=http://localstack:4566
+      - NOTER_APP_S3_BUCKET_NAME=noter-app-bucket
+      - NOTER_APP_SQS_ENDPOINT=http://localstack:4566
+      - NOTER_APP_SQS_QUEUE_NAME=s3-messages
+      - NOTER_APP_SNS_ENDPOINT=http://localstack:4566
+      - NOTER_APP_SNS_TOPIC=s3-events
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
     command:
       ["poetry", "run", "celery", "-A", "celery_worker", "worker", "-l", "info"]
     depends_on:
       - redis
       - db
+      - app
     restart: unless-stopped
     networks:
       - noter_app_network
@@ -57,6 +72,15 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - NOTER_APP_S3_ENDPOINT=http://localstack:4566
+      - NOTER_APP_S3_BUCKET_NAME=noter-app-bucket
+      - NOTER_APP_SQS_ENDPOINT=http://localstack:4566
+      - NOTER_APP_SQS_QUEUE_NAME=s3-messages
+      - NOTER_APP_SNS_ENDPOINT=http://localstack:4566
+      - NOTER_APP_SNS_TOPIC=s3-events
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
     command:
       ["poetry", "run", "celery", "-A", "celery_worker", "beat", "-l", "info"]
     depends_on:

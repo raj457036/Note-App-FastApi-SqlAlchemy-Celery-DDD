@@ -1,5 +1,6 @@
 from typing_extensions import override
 
+from src.domain.integration.storage import FileStorageService
 from src.domain.notes.dtos import CreateNoteByFileDTO
 from src.domain.notes.models.aggregates.note_upload import NoteUploadAggregate
 from src.domain.notes.services.note_service import AbstractNoteService

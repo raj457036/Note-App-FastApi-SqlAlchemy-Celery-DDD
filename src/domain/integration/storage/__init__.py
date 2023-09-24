@@ -4,7 +4,7 @@ from typing import Generic, TypeVar
 SignedURLReturnType = TypeVar("SignedURLReturnType")
 
 
-class FileStorageProvider(ABC, Generic[SignedURLReturnType]):
+class FileStorageService(ABC, Generic[SignedURLReturnType]):
     """An storage provider like AWS S3 or Google Cloud Storage"""
 
     @abstractmethod

@@ -5,6 +5,7 @@ from src.app.usecases.note.create_note import CreateNoteUseCaseImpl
 from src.app.usecases.note.create_note_by_file import \
     CreateNoteByFileUseCaseImpl
 from src.app.usecases.note.get_note_by_id import GetNoteByIDUseCaseImpl
+from src.domain.integration.storage import FileStorageService
 from src.infra.database.connection import Database
 from src.infra.repositories.note_repository import NoteRepositoryImpl
 
@@ -13,6 +14,9 @@ class NoteContainer(containers.DeclarativeContainer):
 
     # database
     database = providers.Dependency(Database)
+
+    # integration
+    storage_service = providers.Dependency(FileStorageService)
 
     # repositories
     note_repository = providers.Factory(
@@ -24,6 +28,7 @@ class NoteContainer(containers.DeclarativeContainer):
     note_service = providers.Factory(
         NoteServiceImpl,
         repository=note_repository,
+        storage_service=storage_service,
     )
 
     # usecases
@@ -40,4 +45,5 @@ class NoteContainer(containers.DeclarativeContainer):
     create_note_by_file = providers.Factory(
         CreateNoteByFileUseCaseImpl,
         service=note_service,
+
     )

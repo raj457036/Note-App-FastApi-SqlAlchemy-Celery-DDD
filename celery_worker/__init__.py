@@ -2,6 +2,10 @@ import os
 
 from celery import Celery
 
+from setup_infra import setup_infra
+
+setup_infra()
+
 # Initialize Celery
 celery = Celery(
     "tasks",

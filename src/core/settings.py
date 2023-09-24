@@ -23,9 +23,11 @@ class Settings(BaseSettings):
 
     # sqs
     sqs_endpoint: HttpUrl | None = None
+    sqs_queue_name: str | None = None
 
     # sns
     sns_endpoint: HttpUrl | None = None
+    sns_topic: str | None = None
 
     @classmethod
     @cache

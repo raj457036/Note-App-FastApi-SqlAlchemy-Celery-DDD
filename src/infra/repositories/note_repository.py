@@ -27,9 +27,10 @@ class NoteRepositoryImpl(BaseRepository[NoteModel], AbstractNoteRepository):
 
     @override
     def create_note(
-        self, title: str, content: str, user_id: UUID
+        self, title: str, content: str, user_id: UUID, **kwargs
     ) -> Note:
-        note = NoteModel(title=title, content=content, user_id=user_id)
+        note = NoteModel(title=title, content=content,
+                         user_id=user_id, **kwargs)
 
         with self.session() as session:
             session.add(note)

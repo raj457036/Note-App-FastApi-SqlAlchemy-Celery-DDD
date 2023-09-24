@@ -12,8 +12,6 @@ from src.domain.notes.usecases.create_note import CreateNoteUseCase
 from src.domain.notes.usecases.create_note_by_file import \
     CreateNoteByFileUseCase
 from src.domain.notes.usecases.get_note_by_id import GetNoteByIDUseCase
-from src.infra.common.integration.storage.s3_storage_provider import (
-    S3SignedUrlResponse, S3StorageProvider)
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/notes")
@@ -45,28 +43,14 @@ def get_note_by_id(
 
 @router.post(
     "/create_by_file",
-    # response_model=NoteUploadAggregate
-    response_model=S3SignedUrlResponse
+    response_model=NoteUploadAggregate
 )
 @inject
 def create_note_by_file(
     dto: CreateNoteByFileDTO,
     create_note_by_file_usecase: CreateNoteByFileUseCase = Depends(
         Provide[RootContainer.note.create_note_by_file]),
-    file_storage: S3StorageProvider = Depends(
-        Provide(RootContainer.file_storage_provider)),
 ):
     logger.info(f"Creating note by file {dto}")
-    # note = create_note_by_file_usecase.execute(dto)
-    # return note
-    url = file_storage.get_presigned_upload_url(
-        object_name="test.txt",
-        expiration=3600,
-        conditions=[
-            {'x-amz-meta-document_id': 'doc_id_1'}
-        ],
-        fields={
-            "x-amz-meta-document_id": "doc_id_1",
-        }
-    )
-    return url
+    note = create_note_by_file_usecase.execute(dto)
+    return note

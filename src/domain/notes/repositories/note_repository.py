@@ -11,5 +11,5 @@ class AbstractNoteRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def create_note(self, title: str, content: str, user_id: UUID) -> Note:
+    def create_note(self, title: str, content: str, user_id: UUID, **kwargs) -> Note:
         raise NotImplementedError
